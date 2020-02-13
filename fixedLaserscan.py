@@ -5,8 +5,7 @@ import rospy
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 
-
-def callback(msg):
+def stop():
 	pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
 	vel_msg = Twist()
 
@@ -16,43 +15,36 @@ def callback(msg):
 	vel_msg.angular.x = 0
 	vel_msg.angular.y = 0
 	vel_msg.angular.z = 0
-	if 0.01 > msg.ranges[0] or msg.ranges[0] > msg.range_max:
+
+	pub.publish(vel_msg)
+	sub.unregister()
+
+
+def callback(msg):
+	pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+	vel_msg = Twist()
+
+	vel_msg.linear.x = 4
+	vel_msg.linear.y = 0
+	vel_msg.linear.z = 0
+	vel_msg.angular.x = 0
+	vel_msg.angular.y = 0
+	vel_msg.angular.z = 0
+    if 0.01 < msg.ranges[0] < msg.range_max:
 		print("I see a wall at", msg.ranges[0], "m !")
+		stop()
+		return()
 	else:
 		print(msg.range_min, "<", msg.ranges[0], "<", msg.range_max)
-		vel_msg.linear.x = 4
 	pub.publish(vel_msg)
-
-"""
-	print('===============================================')
-	print('s1 [0]')
-	print msg.ranges[0]
-
-	print('s2 [90]')
-	print msg.ranges[90]
-
-	print('s3 [180]')
-	print msg.ranges[180]
-
-	print('s4 [270]')
-	print msg.ranges[270]
-
-	print ('s5 [359]')
-	print msg.ranges[359]
-"""
+	return()
 
 rospy.init_node('laser_data')
-Timer = 0
-while Timer < 6:
+for timer in range(21):
 	sub = rospy.Subscriber('scan', LaserScan, callback)
-	Timer = Timer +1
-	time.sleep(1)
+	time.sleep(0.33)
 	print(Timer)
+	pass
 
+stop()
 rospy.spin()
-
-pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
-vel_msg = Twist()
-vel_msg.linear.x = 0
-pub.publish(vel_msg)
-sub.unregister()

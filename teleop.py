@@ -30,6 +30,9 @@
 import rospy
 from geometry_msgs.msg import Twist
 import sys, select, os
+
+#permet à l'utilisateur de contrôler manuellement le turtlebot avec des inputs.
+
 if os.name == 'nt':
   import msvcrt
 else:
@@ -64,6 +67,7 @@ CTRL-C to quit
 e = """
 Communications Failed
 """
+
 
 def getKey():
     if os.name == 'nt':

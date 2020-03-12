@@ -8,6 +8,7 @@ from std_msgs.msg import String
 #     rospy.wait_for_service('circle')
 #     tout_droit = rospy.ServiceProxy('tout_droit', ToutDroit)
 
+#permet au turtlebot d'effectuer une trajectoire en cercle avec un timer.
 
 def rosace():
 	timer =0

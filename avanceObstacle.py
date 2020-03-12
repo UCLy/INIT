@@ -10,6 +10,8 @@ from sensor_msgs.msg import LaserScan
 #     rospy.wait_for_service('circle')
 #     tout_droit = rospy.ServiceProxy('tout_droit', ToutDroit)
 
+#permet d'avancer selon 20cm, et de s'arrêter à la rencontre d'un obsctacle.
+
 start_position = None
 current_position = None
 arret = None

@@ -5,7 +5,7 @@ import rospy
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 
-
+#permet au turtlebot de détecter et s
 def callback(msg):
 	pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
 	vel_msg = Twist()

@@ -30,6 +30,9 @@
 import rospy
 from geometry_msgs.msg import Twist
 import sys, select, os
+
+#permet à l'utilisateur d'executer les noeuds par le clavier.
+
 if os.name == 'nt':
   import msvcrt
 else:
@@ -174,7 +177,7 @@ if __name__=="__main__":
                 print vels(target_linear_vel, target_angular_vel)
 
             elif key == 'o' :
-                etalonnage(pub)				# call circle function
+                etalonnage(pub)				# call function "avanceObstacle"
                 status = status + 1
 
             else:

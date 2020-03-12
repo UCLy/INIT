@@ -9,6 +9,9 @@ from sensor_msgs.msg import CompressedImage
 from time import sleep
 import math
 
+
+#permet au turtlebot d'effectuer une trajectoire en carré, avec feedback du turtlebot.
+
 def imu_callback(msg):
     rospy.loginfo("From IMU, linear acceleration = %s angular acceleration = %s",
                   str(msg.linear_acceleration.x),

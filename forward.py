@@ -5,6 +5,7 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Imu
 from sensor_msgs.msg import CompressedImage
 
+#permet au turtlebot d'avancer ou de reculer avec un input de l'utilisateur pour définir la distance.
 def imu_callback(msg):
     rospy.loginfo("From IMU, linear acceleration = %s angular acceleration = %s",
                   str(msg.linear_acceleration.x),

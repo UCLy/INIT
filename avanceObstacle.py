@@ -6,9 +6,12 @@ from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
 
+#Le ce noeud "avanceObstacle.py" permet d'avancer de 20 cm, et de s'arrêter à la rencontre d'un obsctacle.
+
 # def spawn():
 #     rospy.wait_for_service('circle')
 #     tout_droit = rospy.ServiceProxy('tout_droit', ToutDroit)
+
 
 start_position = None
 current_position = None

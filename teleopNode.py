@@ -31,14 +31,11 @@ import rospy
 from geometry_msgs.msg import Twist
 import sys, select, os
 
-#permet à l'utilisateur d'executer les noeuds par le clavier.
-
 if os.name == 'nt':
   import msvcrt
 else:
   import tty, termios
 
-from circle import rosace
 from avanceObstacle import etalonnage
 
 BURGER_MAX_LIN_VEL = 0.22

@@ -10,3 +10,7 @@ A `ROSCORE` compatible Linux environment is strongly recommended.
 
 In case you do not have access to a Turtlebot3 Burger robot, a `ROSCORE` compatible simulator with a working Turtlebot model will also be needed.
 (for example `Gazebo`)
+
+## Starting the project
+
+Refer to the wiki for various pointers on how to get started on this project

@@ -36,6 +36,7 @@ if os.name == 'nt':
 else:
   import tty, termios
 
+# import de la fonction etalonnage du noeud avanceObstacle
 from avanceObstacle import etalonnage
 
 BURGER_MAX_LIN_VEL = 0.22
@@ -54,12 +55,13 @@ Control Your TurtleBot3!
 Moving around:
         z
    q    s    d
-        x
+        x    o	
 
 w/x : increase/decrease linear velocity (Burger : ~ 0.22, Waffle and Waffle Pi : ~ 0.26)
 a/d : increase/decrease angular velocity (Burger : ~ 2.84, Waffle and Waffle Pi : ~ 1.82)
 
 space key, s : force stop
+o : Noeud avanceObstacle
 
 CTRL-C to quit
 """
@@ -146,10 +148,7 @@ if __name__=="__main__":
         print msg
         while(1):
             key = getKey()
-			#if key == 'a' :
-				#etalonnage(pub)				# call circle function
-				#status = status + 1
-				#print ('Avance Obstacle launched')
+	
             if key == 'z' :
                 target_linear_vel = checkLinearLimitVelocity(target_linear_vel + LIN_VEL_STEP_SIZE)
                 status = status + 1
@@ -174,7 +173,9 @@ if __name__=="__main__":
                 print vels(target_linear_vel, target_angular_vel)
 
             elif key == 'o' :
-                etalonnage(pub)				# call function "avanceObstacle"
+		# call function "etalonnage"
+		# pub est une variable dans laquelle est stockée des données publiée par le topic cmd_vel
+                etalonnage(pub)	 
                 status = status + 1
 
             else:

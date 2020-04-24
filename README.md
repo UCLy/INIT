@@ -22,3 +22,5 @@ The `Gazebo` simulator should be included in the basic ROS package, you can use 
 You can find instructions to import a Turtlebot3 model here: http://emanual.robotis.com/docs/en/platform/turtlebot3/simulation/
 
 Refer to the wiki for various pointers on how to get started with the interactions of this project and some technical support
+
+A step by step documentation to install the working environment is available here https://github.com/UCLy/INIT/wiki/Configuration-de-l'environnement-de-travail (in French).

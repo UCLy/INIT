@@ -67,8 +67,11 @@ def etalonnage(velocity_publisher):
     operations_par_seconde = 50.
     rate = rospy.Rate(operations_par_seconde)
     
-"""La variable t permet d ajouter une condition de sortie de la boucle while
+    
+    
+    """La variable t permet d ajouter une condition de sortie de la boucle while
     en l incrementant de 1 dans le cas ou la valeur du LaserScan est inferieur a 0.5"""
+    
     t = 0
     while not rospy.is_shutdown() and distance(start_position, current_position) < 0.5 and t==0 :
         

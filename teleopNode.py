@@ -36,7 +36,7 @@ if os.name == 'nt':
 else:
   import tty, termios
 
-# import de la fonction etalonnage du noeud avanceObstacle
+#import de la fonction etalonnage du noeud avanceObstacle
 from avanceObstacle import etalonnage
 
 BURGER_MAX_LIN_VEL = 0.22
@@ -173,8 +173,8 @@ if __name__=="__main__":
                 print vels(target_linear_vel, target_angular_vel)
 
             elif key == 'o' :
-		# call function "etalonnage"
-		# pub est une variable dans laquelle est stockée des données publiée par le topic cmd_vel
+		#call function etalonnage
+		#pub est une variable dans laquelle est stockee des donnees publiee par le topic cmd_vel
                 etalonnage(pub)	 
                 status = status + 1
 

@@ -24,9 +24,9 @@ def distance(pos1, pos2):
         return 0
     return math.sqrt((pos1.x - pos2.x) ** 2 + (pos1.y - pos2.y) ** 2)
 
-"""La fonction majdistance récupére les donnees de la structure de données Odometry
-    precisement le champ pose.pose.position start_position et current_position sont déclarees
-    comme variable global afin qu ils soient utilisees dans n'importe quelle fonction du Noeud"""
+"""La fonction majdistance recupere les donnees de la structure de donnees Odometry
+    precisement le champ pose.pose.position startposition et currentposition sont declarees
+    comme variable global afin qu ils soient utilisees dans n importe quelle fonction du Noeud"""
 def maj_distance(msg):
     global start_position, current_position
     current_position = msg.pose.pose.position

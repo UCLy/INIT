@@ -15,6 +15,7 @@ arret = None
 
 def callback(msg):
     global arret
+    print("je marche")
     arret = msg.ranges[0]
 
 
@@ -30,6 +31,8 @@ def laser(dist):
 
 
 def obstacle(dist_arret):
+    rospy.Subscriber('odom', Odometry)
+    sub = rospy.Subscriber('scan', LaserScan, callback)
     return_value = 0
     test = laser(arret)
     print(arret)

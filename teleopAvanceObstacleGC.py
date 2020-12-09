@@ -27,7 +27,15 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+
+
 import rospy
+import time
+import math
+from geometry_msgs.msg import Twist
+from nav_msgs.msg import Odometry
+from sensor_msgs.msg import LaserScan
+
 from geometry_msgs.msg import Twist
 import sys, select, os
 
@@ -229,15 +237,7 @@ if __name__ == "__main__":
     if os.name != 'nt':
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
 
-###################################################################################################
 
-# !/usr/bin/env python
-import rospy
-import time
-import math
-from geometry_msgs.msg import Twist
-from nav_msgs.msg import Odometry
-from sensor_msgs.msg import LaserScan
 
 # Le noeud avanceObstacle.py permet d avancer de 20 cm et de s arreter a la rencontre d un obsctacle.
 
@@ -338,5 +338,19 @@ def etalonnage(velocity_publisher):
 
 
 if __name__ == "__main__":
+    rospy.init_node('turtlebot3_teleop')
+
+    pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
+    turtlebot3_model = rospy.get_param("model", "burger")
+
+    status = 0
+    target_linear_vel = 0.0
+    target_angular_vel = 0.0
+    control_linear_vel = 0.0
+    control_angular_vel = 0.0
+
     # call function etalonnage
-    etalonnage()
+    etalonnage(pub)
+
+    # if os.name != 'nt':
+    #    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)

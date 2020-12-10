@@ -30,7 +30,6 @@
 
 
 import rospy
-import time
 import math
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
@@ -158,38 +157,35 @@ if __name__ == "__main__":
     control_angular_vel = 0.0
 
     try:
-        print
-        msg
+        #etalonnage(pub)
+        #status = status + 1
+        # print(msg)
         while (1):
             key = getKey()
-
+            # etalonnage(pub)
+            # status = status + 1
             if key == 'z':
                 target_linear_vel = checkLinearLimitVelocity(target_linear_vel + LIN_VEL_STEP_SIZE)
                 status = status + 1
-                print
-                vels(target_linear_vel, target_angular_vel)
+                print(vels(target_linear_vel, target_angular_vel))
             elif key == 'x':
                 target_linear_vel = checkLinearLimitVelocity(target_linear_vel - LIN_VEL_STEP_SIZE)
                 status = status + 1
-                print
-                vels(target_linear_vel, target_angular_vel)
+                print(vels(target_linear_vel, target_angular_vel))
             elif key == 'q':
                 target_angular_vel = checkAngularLimitVelocity(target_angular_vel + ANG_VEL_STEP_SIZE)
                 status = status + 1
-                print
-                vels(target_linear_vel, target_angular_vel)
+                print(vels(target_linear_vel, target_angular_vel))
             elif key == 'd':
                 target_angular_vel = checkAngularLimitVelocity(target_angular_vel - ANG_VEL_STEP_SIZE)
                 status = status + 1
-                print
-                vels(target_linear_vel, target_angular_vel)
+                print(vels(target_linear_vel, target_angular_vel))
             elif key == ' ' or key == 's':
                 target_linear_vel = 0.0
                 control_linear_vel = 0.0
                 target_angular_vel = 0.0
                 control_angular_vel = 0.0
-                print
-                vels(target_linear_vel, target_angular_vel)
+                print(vels(target_linear_vel, target_angular_vel))
 
             elif key == 'o':
                 # call function etalonnage
@@ -202,8 +198,7 @@ if __name__ == "__main__":
                     break
 
             if status == 20:
-                print
-                msg
+                print(msg)
                 status = 0
 
             twist = Twist()
@@ -221,8 +216,7 @@ if __name__ == "__main__":
             pub.publish(twist)
 
     except:
-        print
-        e
+        print(e)
 
     finally:
         twist = Twist()
@@ -239,11 +233,7 @@ if __name__ == "__main__":
 
 
 
-# Le noeud avanceObstacle.py permet d avancer de 20 cm et de s arreter a la rencontre d un obsctacle.
 
-# def spawn():
-#     rospy.wait_for_service('circle')
-#     tout_droit = rospy.ServiceProxy('tout_droit', ToutDroit)
 
 # Declaration des variables initialisees a None : Objet Python qui exprime l absence de valeur
 start_position = None
@@ -299,6 +289,7 @@ def laser(dist):
 
 
 def etalonnage(velocity_publisher):
+    print("je marche")
     global start_position, current_position, arret
     rospy.Subscriber('odom', Odometry, maj_distance)
     sub = rospy.Subscriber('scan', LaserScan, callback)

@@ -218,7 +218,6 @@ if __name__ == "__main__":
                 print(vels(target_linear_vel, target_angular_vel))
             elif key == 'o':
                 # call function etalonnage
-                # pub est une variable dans laquelle est stockee des donnees publiee par le topic cmd_vel
                 etalonnage(pub)
                 status = status + 1
             else:

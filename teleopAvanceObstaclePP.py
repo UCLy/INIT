@@ -117,7 +117,7 @@ def etalonnage(velocity_publisher):
     vel_msg.angular.y = 0
     vel_msg.angular.z = 0
 
-    operations_par_seconde = 50.
+    operations_par_seconde = 50
     rate = rospy.Rate(operations_par_seconde)
 
     """La variable t permet d ajouter une condition de sortie de la boucle while

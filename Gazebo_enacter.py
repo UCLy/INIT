@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 import rospy
 from geometry_msgs.msg import Twist
-from turtlesim.msg import Pose
+from nav_msgs.msg import Odometry
+
+# from turtlesim.msg import Pose
 
 # Olivier Georgeon, 2020.
 # This code is used to teach Develpmental AI.
@@ -11,21 +13,21 @@ from turtlesim.msg import Pose
 #   * http://wiki.ros.org/turtlesim/Tutorials/Go%20to%20Goal
 
 
-class TurtleSimEnacter:
+class GazeboEnacter:
 
     def __init__(self):
         """ Creating our node, publisher and subscriber """
-        rospy.init_node('turtlesim_enacter', anonymous=True)
-        self.velocity_publisher = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size=10)
-        self.pose_subscriber = rospy.Subscriber('/turtle1/pose', Pose, self.callback)
-        self.pose = Pose()
+        rospy.init_node('gazebo_enacter', anonymous=True)
+        self.velocity_publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+        self.odom_subscriber = rospy.Subscriber('/turtle1/pose', Odometry, self.callback)
+        self.odom = Odometry()
         self.rate = rospy.Rate(10)
 
     def callback(self, data):
         """ Callback function implementing the pose value received """
-        self.pose = data
-        self.pose.x = round(self.pose.x, 4)
-        self.pose.y = round(self.pose.y, 4)
+        self.odom = data
+        self.odom.x = round(self.odom.x, 4)
+        self.odom.y = round(self.odom.y, 4)
 
     def move(self, linear_speed=0.0, angular_speed=0.0, duration=1.0):
         """ Enacting a movement and returning the outcome """
@@ -55,7 +57,7 @@ class TurtleSimEnacter:
         # print(Position x=% 2.1f, y=% 2.1f" % (self.pose.x, self.pose.y))
 
         # return outcome 1 if position is against the wall
-        if 0.1 < self.pose.x < 10.9 and 0.1 < self.pose.y < 10.9:
+        if 0.1 < self.odom.x < 10.9 and 0.1 < self.odom.y < 10.9: # ici on doit mettre la partie de Mr thollin
             return 0
         else:
             return 1
@@ -78,7 +80,7 @@ class TurtleSimEnacter:
 if __name__ == '__main__':
     """ Main """
     try:
-        x = TurtleSimEnacter()
+        x = GazeboEnacter()
         choice = input("Type 0 to enter values, or 1 to enter interactions: ")
         if choice == 0:
             lx_speed = float(input("Input the linear speed (cell /sec): "))

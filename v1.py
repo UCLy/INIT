@@ -6,6 +6,7 @@ import math
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
 
+
 class TurtleBot:
 
     def __init__(self):
@@ -24,9 +25,7 @@ class TurtleBot:
         self.start_position = None
         self.current_position = None
 
-
     def enact(self, linear_speed=0.0, angular_speed=0.0, duration=1.0):
-
         self.laser_subscriber = rospy.Subscriber('scan', LaserScan, self.getTurtleBotPos)
         self.current_position = rospy.Subscriber('odom', Odometry, None)
 
@@ -55,8 +54,7 @@ class TurtleBot:
         print("getTurtleBotPos")
         print(data.ranges[0])
 
-   # def updatePosition(self, data):
-
+    # def updatePosition(self, data):
 
     def shutdown(self):
         # You can stop turtlebot by publishing an empty Twist
@@ -66,6 +64,7 @@ class TurtleBot:
         self.velocity_publisher.publish(Twist())
         # Give TurtleBot time to stop
         rospy.sleep(1)
+
 
 if __name__ == '__main__':
     try:

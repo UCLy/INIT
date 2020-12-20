@@ -3,15 +3,6 @@ import rospy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 
-# from turtlesim.msg import Pose
-
-# Olivier Georgeon, 2020.
-# This code is used to teach Develpmental AI.
-#
-# Inspired by ROS Python tutorial:
-#   * http://wiki.ros.org/turtlesim/Tutorials#Practicing_Python_with_Turtlesim
-#   * http://wiki.ros.org/turtlesim/Tutorials/Go%20to%20Goal
-
 
 class GazeboEnacter:
 
@@ -57,7 +48,7 @@ class GazeboEnacter:
         # print(Position x=% 2.1f, y=% 2.1f" % (self.pose.x, self.pose.y))
 
         # return outcome 1 if position is against the wall
-        if 0.1 < self.odom.x < 10.9 and 0.1 < self.odom.y < 10.9: # ici on doit mettre la partie de Mr thollin
+        if 0.1 < self.odom.x < 10.9 and 0.1 < self.odom.y < 10.9:  # ici on doit mettre la partie de Mr thollin
             return 0
         else:
             return 1

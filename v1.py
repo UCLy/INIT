@@ -50,8 +50,8 @@ class TurtleBot:
         self.velocity_publisher.publish(vel_msg)
 
     def getTurtleBotPos(self, data):
-        print("Data :" + data)
-        print("getTurtleBotPos" + data.ranges[0])
+        print(data)
+        print("getTurtleBotPos : " + str(data.ranges[0]))
 
     # def updatePosition(self, data):
 

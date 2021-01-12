@@ -18,22 +18,29 @@ class GazeboEnacter:
         rospy.init_node('gazebo_enacter', anonymous=True)
         self.velocity_publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
         self.odom_subscriber = rospy.Subscriber('/turtle1/pose', Odometry, self.callback)
+
         self.odom = Odometry()
         self.rate = rospy.Rate(10)
+
         self.start_position = None
         self.current_position = None
 
     def callback(self, data):
         """ Callback function implementing the pose value received """
+        print(data)
         self.odom = data
         self.odom.x = round(self.odom.x, 4)
         self.odom.y = round(self.odom.y, 4)
+
+    def getTurtleBotPos(self, data):
+        print("getTurtleBotPos : " + str(data.ranges[0]))
+        return data
 
     def move(self, linear_speed=0.0, angular_speed=0.0, duration=1.0):
         """ Enacting a movement and returning the outcome """
         self.laser_subscriber = rospy.Subscriber('scan', LaserScan, self.getTurtleBotPos)
         self.current_position = rospy.Subscriber('odom', Odometry, None)
-
+        print(str(self.laser_subscriber.callback))
         vel_msg = Twist()
 
         vel_msg.linear.x = linear_speed
@@ -47,52 +54,55 @@ class GazeboEnacter:
         t0 = float(rospy.Time.now().to_sec())
 
         # Loop to move the turtle during a specific duration
+
         while float(rospy.Time.now().to_sec()) - t0 < duration:
-            # Publish the velocity
-            self.velocity_publisher.publish(vel_msg)
-            self.rate.sleep()
+             # Publish the velocity
+             self.velocity_publisher.publish(vel_msg)
+             self.rate.sleep()
+            
+        #while float(rospy.Time.now().to_sec()) - t0 < duration:
+        #    dist = self.getTurtleBotPos
+        #    # return outcome 1 if position is against the wall
+        #    if dist.ranges[0] < 1.20:
+        #        print("diego")
+        #        self.velocity_publisher.publish(vel_msg)
+        #        self.rate.sleep()
+        #    else:
+        #        print("dora")
+        #        self.velocity_publisher.publish(vel_msg)
+        #        self.rate.sleep()
 
         # After the loop, stops the robot
         vel_msg.linear.x = 0
         vel_msg.angular.z = 0
+
         # Publish the null velocity to force the robot to stop
         self.velocity_publisher.publish(vel_msg)
-        # print(Position x=% 2.1f, y=% 2.1f" % (self.pose.x, self.pose.y))
-
-        # return outcome 1 if position is against the wall
-        if 0.1 < self.odom.x < 10.9 and 0.1 < self.odom.y < 10.9:  # ici on doit mettre la partie de Mr thollin
-            return 0
-        else:
-            return 1
-
-    def getTurtleBotPos(self, data):
-        print(data)
-        print("getTurtleBotPos : " + str(data.ranges[0]))
 
     # def updatePosition(self, data):
 
-    # def outcome(self, action):
-    #     """ Enacting an action and returning the outcome """
-    #     if action == 0:
-    #         # move forward
-    #         return self.move(linear_speed=1)
-    #     elif action == 1:
-    #         # rotate left
-    #         return self.move(linear_speed=0.5, angular_speed=1)
-    #     elif action == 2:
-    #         # rotate right
-    #         return self.move(linear_speed=0.5, angular_speed=-1)
-    #     else:
-    #         return 0
+    def outcome(self, action):
+        """ Enacting an action and returning the outcome """
+        if action == 0:
+            # move forward
+            return self.move(linear_speed=1)
+        elif action == 1:
+            # rotate left
+            return self.move(linear_speed=0.5, angular_speed=1)
+        elif action == 2:
+            # rotate right
+            return self.move(linear_speed=0.5, angular_speed=-1)
+        else:
+            return 0
 
     def shutdown(self):
-        # You can stop turtlebot by publishing an empty Twist
-        # message
+        # You can stop turtlebot by publishing an empty Twist message
         rospy.loginfo("Stopping TurtleBot")
 
         self.velocity_publisher.publish(Twist())
         # Give TurtleBot time to stop
         rospy.sleep(1)
+        return 0
 
 
 if __name__ == '__main__':

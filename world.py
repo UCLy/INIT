@@ -75,7 +75,7 @@ class Agent:
 def world(agent, environment):
     """ The main loop controlling the interaction of the agent with the environment """
     outcome = 0
-    for i in range(15):
+    for i in range(10):
         action = agent.action(outcome)
         outcome = environment.outcome(action)
         print(" Action: " + str(action) + ", Anticipation: " + str(agent.anticipation()) + ", Outcome: " + str(outcome)

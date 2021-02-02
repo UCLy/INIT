@@ -44,6 +44,8 @@ class GazeboEnacter:
         self.laser_subscriber = rospy.Subscriber('scan', LaserScan, self.getTurtleBotPos)
         self.current_position = rospy.Subscriber('odom', Odometry, None)
         vel_msg = Twist()
+        warning = False
+        safe_dist = 0.5
 
         vel_msg.linear.x = linear_speed
         vel_msg.linear.y = 0
@@ -64,8 +66,9 @@ class GazeboEnacter:
 
         while float(rospy.Time.now().to_sec()) - t0 < duration:
             #print(str(self.numpyArray[0]))
-            if self.numpyArray[0] < 1.20 or self.numpyArray[90] < 1.20 or self.numpyArray[270] < 1.20:
+            if self.numpyArray[0] < safe_dist or self.numpyArray[90] < safe_dist or self.numpyArray[270] < safe_dist:
                 print("diego")
+                warning = False
                 break
             else:
                 print("dora")
@@ -79,6 +82,14 @@ class GazeboEnacter:
 
         # Publish the null velocity to force the robot to stop
         self.velocity_publisher.publish(vel_msg)
+
+        #return outcome 1 if the robot is close to a wall
+        if warning:
+            return 1
+        else:
+            return 0
+
+    # def updatePosition(self, data):
 
     def outcome(self, action):
         """ Enacting an action and returning the outcome """

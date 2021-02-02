@@ -64,12 +64,14 @@ class GazeboEnacter:
 
         while float(rospy.Time.now().to_sec()) - t0 < duration:
             #print(str(self.numpyArray[0]))
-            if self.numpyArray[0] < 1.20:
+            if self.numpyArray[0] < 1.20 or self.numpyArray[90] < 1.20 or self.numpyArray[270] < 1.20:
                 print("diego")
+                break
             else:
                 print("dora")
-            self.velocity_publisher.publish(vel_msg)
-            self.rate.sleep()
+                self.velocity_publisher.publish(vel_msg)
+                self.rate.sleep()
+        print("c fini")
 
         # After the loop, stops the robot
         vel_msg.linear.x = 0

@@ -67,11 +67,12 @@ class GazeboEnacter:
         while float(rospy.Time.now().to_sec()) - t0 < duration:
             #print(str(self.numpyArray[0]))
             if self.numpyArray[0] < safe_dist or self.numpyArray[90] < safe_dist or self.numpyArray[270] < safe_dist:
-                print("diego")
-                warning = False
-                break
+                #print("diego")
+                warning = True
+                self.velocity_publisher.publish(Twist())
+                #break
             else:
-                print("dora")
+                #print("dora")
                 self.velocity_publisher.publish(vel_msg)
                 self.rate.sleep()
         print("c fini")

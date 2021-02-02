@@ -53,8 +53,6 @@ class TurtleBot:
         print(data)
         print("getTurtleBotPos : " + str(data.ranges[0]))
 
-    # def updatePosition(self, data):
-
     def shutdown(self):
         # You can stop turtlebot by publishing an empty Twist
         # message

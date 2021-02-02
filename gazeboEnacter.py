@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import rospy
+import numpy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
@@ -21,9 +22,7 @@ class GazeboEnacter:
 
         self.odom = Odometry()
         self.rate = rospy.Rate(10)
-
-        self.start_position = None
-        self.current_position = None
+        self.numpyArray = numpy.full(360, numpy.inf)
 
     def callback(self, data):
         """ Callback function implementing the pose value received """
@@ -33,14 +32,17 @@ class GazeboEnacter:
         self.odom.y = round(self.odom.y, 4)
 
     def getTurtleBotPos(self, data):
-        print("getTurtleBotPos : " + str(data.ranges[0]))
-        return data
+        self.numpyArray = numpy.array(data.ranges)
+        # print("Valeurs brut : " + str(data.ranges[0]))
+        # print("Original type: " + str(type(data.ranges[0])))
+        # print("Tableau numpy : " + str(numpyArray[0]))
+        # print("Numpy type: " + str(type(numpyArray)))
+        # print("distObstacleDevant : " + str(data.ranges[180]))
 
     def move(self, linear_speed=0.0, angular_speed=0.0, duration=1.0):
         """ Enacting a movement and returning the outcome """
         self.laser_subscriber = rospy.Subscriber('scan', LaserScan, self.getTurtleBotPos)
         self.current_position = rospy.Subscriber('odom', Odometry, None)
-        print(str(self.laser_subscriber.callback))
         vel_msg = Twist()
 
         vel_msg.linear.x = linear_speed
@@ -55,22 +57,19 @@ class GazeboEnacter:
 
         # Loop to move the turtle during a specific duration
 
+        # while float(rospy.Time.now().to_sec()) - t0 < duration:
+        #     # Publish the velocity
+        #     self.velocity_publisher.publish(vel_msg)
+        #     self.rate.sleep()
+
         while float(rospy.Time.now().to_sec()) - t0 < duration:
-             # Publish the velocity
-             self.velocity_publisher.publish(vel_msg)
-             self.rate.sleep()
-            
-        #while float(rospy.Time.now().to_sec()) - t0 < duration:
-        #    dist = self.getTurtleBotPos
-        #    # return outcome 1 if position is against the wall
-        #    if dist.ranges[0] < 1.20:
-        #        print("diego")
-        #        self.velocity_publisher.publish(vel_msg)
-        #        self.rate.sleep()
-        #    else:
-        #        print("dora")
-        #        self.velocity_publisher.publish(vel_msg)
-        #        self.rate.sleep()
+            #print(str(self.numpyArray[0]))
+            if self.numpyArray[0] < 1.20:
+                print("diego")
+            else:
+                print("dora")
+            self.velocity_publisher.publish(vel_msg)
+            self.rate.sleep()
 
         # After the loop, stops the robot
         vel_msg.linear.x = 0
@@ -78,8 +77,6 @@ class GazeboEnacter:
 
         # Publish the null velocity to force the robot to stop
         self.velocity_publisher.publish(vel_msg)
-
-    # def updatePosition(self, data):
 
     def outcome(self, action):
         """ Enacting an action and returning the outcome """

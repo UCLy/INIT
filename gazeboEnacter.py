@@ -39,13 +39,12 @@ class GazeboEnacter:
         # print("Numpy type: " + str(type(numpyArray)))
         # print("distObstacleDevant : " + str(data.ranges[180]))
 
-    def move(self, linear_speed=0.0, angular_speed=0.0, duration=1.0):
+    def move(self, safe_dist=0.4, linear_speed=0.0, angular_speed=0.0, duration=5.0):
         """ Enacting a movement and returning the outcome """
         self.laser_subscriber = rospy.Subscriber('scan', LaserScan, self.getTurtleBotPos)
         self.current_position = rospy.Subscriber('odom', Odometry, None)
         vel_msg = Twist()
         warning = False
-        safe_dist = 0.5
 
         vel_msg.linear.x = linear_speed
         vel_msg.linear.y = 0
@@ -66,7 +65,7 @@ class GazeboEnacter:
 
         while float(rospy.Time.now().to_sec()) - t0 < duration:
             #print(str(self.numpyArray[0]))
-            if self.numpyArray[0] < safe_dist or self.numpyArray[90] < safe_dist or self.numpyArray[270] < safe_dist:
+            if self.numpyArray[0] < safe_dist:# or self.numpyArray[90] < safe_dist or self.numpyArray[270] < safe_dist:
                 #print("diego")
                 warning = True
                 self.velocity_publisher.publish(Twist())
@@ -96,13 +95,13 @@ class GazeboEnacter:
         """ Enacting an action and returning the outcome """
         if action == 0:
             # move forward
-            return self.move(linear_speed=1)
+            return self.move(linear_speed=0.2)
         elif action == 1:
             # rotate left
-            return self.move(linear_speed=0.5, angular_speed=1)
+            return self.move(safe_dist=0.2, linear_speed=0, angular_speed=0.3)
         elif action == 2:
             # rotate right
-            return self.move(linear_speed=0.5, angular_speed=-1)
+            return self.move(safe_dist=0.2, linear_speed=0, angular_speed=-0.3)
         else:
             return 0
 

@@ -74,7 +74,7 @@ class GazeboEnacter:
                 #print("dora")
                 self.velocity_publisher.publish(vel_msg)
                 self.rate.sleep()
-        print("c fini")
+        #print("c fini")
 
         # After the loop, stops the robot
         vel_msg.linear.x = 0

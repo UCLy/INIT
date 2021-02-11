@@ -78,7 +78,22 @@ def world(agent, environment):
     for i in range(10):
         action = agent.action(outcome)
         outcome = environment.outcome(action)
-        print(" Action: " + str(action) + ", Anticipation: " + str(agent.anticipation()) + ", Outcome: " + str(outcome)
+        if action == 1 or action == 2:
+            nom_action = "turn"
+        else:
+            nom_action = "forward"
+
+        if outcome == 1:
+            nom_outcome = "obstacle"
+        else:
+            nom_outcome = "no obstacle"
+
+        if agent.anticipation() == 1:
+            nom_anticipation = "obstacle"
+        else:
+            nom_anticipation = "no obstacle"
+
+        print(" Action: " + nom_action + ", Anticipation: " + nom_anticipation + ", Outcome: " + nom_outcome
               + ", Satisfaction: " + str(agent.satisfaction(outcome)))
 
 

@@ -9,6 +9,8 @@ from sensor_msgs.msg import LaserScan
 class GazeboEnacter:
 
     def __init__(self):
+        """ Creation of the GazeboEnacter object """
+
         # Message to inform user
         rospy.loginfo("Press CTRL+c to stop TurtleBot")
 
@@ -32,6 +34,12 @@ class GazeboEnacter:
         self.odom.y = round(self.odom.y, 4)
 
     def getTurtleBotPos(self, data):
+        """ Callback function that collects information from LaserScan
+
+            These informations are stored in the variable data and we take
+            the ranges array where are stored all the distances between the
+            robot and the obstacle at 360° and at a maximum distance of 3.5 metres.
+        """
         self.numpyArray = numpy.array(data.ranges)
         # print("Valeurs brut : " + str(data.ranges[0]))
         # print("Original type: " + str(type(data.ranges[0])))
@@ -64,17 +72,18 @@ class GazeboEnacter:
         #     self.rate.sleep()
 
         while float(rospy.Time.now().to_sec()) - t0 < duration:
-            #print(str(self.numpyArray[0]))
-            if self.numpyArray[0] < safe_dist:# or self.numpyArray[90] < safe_dist or self.numpyArray[270] < safe_dist:
-                #print("diego")
+            # print(str(self.numpyArray[0]))
+            if self.numpyArray[
+                0] < safe_dist:  # or self.numpyArray[90] < safe_dist or self.numpyArray[270] < safe_dist:
+                # print("diego")
                 warning = True
                 self.velocity_publisher.publish(Twist())
-                #break
+                # break
             else:
-                #print("dora")
+                # print("dora")
                 self.velocity_publisher.publish(vel_msg)
                 self.rate.sleep()
-        #print("c fini")
+        # print("c fini")
 
         # After the loop, stops the robot
         vel_msg.linear.x = 0
@@ -83,7 +92,7 @@ class GazeboEnacter:
         # Publish the null velocity to force the robot to stop
         self.velocity_publisher.publish(vel_msg)
 
-        #return outcome 1 if the robot is close to a wall
+        # return outcome 1 if the robot is close to a wall
         if warning:
             return 1
         else:

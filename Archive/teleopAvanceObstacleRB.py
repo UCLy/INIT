@@ -1,16 +1,16 @@
-# !/usr/bin/env python
+import sys, select, os
 import rospy
-import time
 import math
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
-import sys, select, os
 
 if os.name == 'nt':
     import msvcrt
 else:
     import tty, termios
+
+from Archive.avanceObstacle import etalonnage
 
 BURGER_MAX_LIN_VEL = 0.22
 BURGER_MAX_ANG_VEL = 2.84
@@ -42,73 +42,6 @@ CTRL-C to quit
 e = """
 Communications Failed
 """
-
-
-# Declaration des variables initialisees a None : Objet Python qui exprime l'absence de valeur
-start_position = None
-current_position = None
-arret = None
-
-
-def distance(pos1, pos2):
-    if pos1 is None or pos2 is None:
-        return 0
-    return math.sqrt((pos1.x - pos2.x) ** 2 + (pos1.y - pos2.y) ** 2)
-
-
-def maj_distance(msg):
-    global start_position, current_position
-    current_position = msg.pose.pose.position
-
-    if start_position is None:
-        start_position = current_position
-
-
-def callback(msg):
-    global arret
-    arret = msg.ranges[0]
-
-
-def laser(dist):
-    if dist is None:
-        return 0
-    else:
-        return dist
-
-
-def etalonnage(velocity_publisher):
-    global start_position, current_position, arret
-    rospy.Subscriber('odom', Odometry, maj_distance)
-    sub = rospy.Subscriber('scan', LaserScan, callback)
-
-    vel_msg = Twist()
-    vel_msg.linear.x = 1
-    vel_msg.linear.y = 0
-    vel_msg.linear.z = 0
-    vel_msg.angular.x = 0
-    vel_msg.angular.y = 0
-    vel_msg.angular.z = 0
-
-    operations_par_seconde = 50.
-    rate = rospy.Rate(operations_par_seconde)
-
-    t = 0
-    while not rospy.is_shutdown() and distance(start_position, current_position) < 0.5 and t == 0:
-
-        # La variable test contient l appel de la fonction laser avec la variable arret en parametre
-        test = laser(arret)
-        if test > 0.5:
-            vel_msg.linear.x = 1
-            print("0")
-        if test < 0.5:
-            vel_msg.linear.x = 0
-            print("1")
-            t = t + 1
-        velocity_publisher.publish(vel_msg)
-        rate.sleep()
-
-    vel_msg.angular.z = 0
-    velocity_publisher.publish(vel_msg)
 
 
 def getKey():
@@ -190,74 +123,147 @@ if __name__ == "__main__":
     control_angular_vel = 0.0
 
     try:
-        print(msg)
-        while 1:
+        print
+        msg
+        while (1):
             key = getKey()
 
             if key == 'z':
                 target_linear_vel = checkLinearLimitVelocity(target_linear_vel + LIN_VEL_STEP_SIZE)
                 status = status + 1
-                print(vels(target_linear_vel, target_angular_vel))
+                print
+                vels(target_linear_vel, target_angular_vel)
             elif key == 'x':
                 target_linear_vel = checkLinearLimitVelocity(target_linear_vel - LIN_VEL_STEP_SIZE)
                 status = status + 1
-                print(vels(target_linear_vel, target_angular_vel))
+                print
+                vels(target_linear_vel, target_angular_vel)
             elif key == 'q':
                 target_angular_vel = checkAngularLimitVelocity(target_angular_vel + ANG_VEL_STEP_SIZE)
                 status = status + 1
-                print(vels(target_linear_vel, target_angular_vel))
+                print
+                vels(target_linear_vel, target_angular_vel)
             elif key == 'd':
                 target_angular_vel = checkAngularLimitVelocity(target_angular_vel - ANG_VEL_STEP_SIZE)
                 status = status + 1
-                print(vels(target_linear_vel, target_angular_vel))
+                print
+                vels(target_linear_vel, target_angular_vel)
             elif key == ' ' or key == 's':
                 target_linear_vel = 0.0
                 control_linear_vel = 0.0
                 target_angular_vel = 0.0
                 control_angular_vel = 0.0
-                print(vels(target_linear_vel, target_angular_vel))
+                print
+                vels(target_linear_vel, target_angular_vel)
+
             elif key == 'o':
-                # call function etalonnage
                 etalonnage(pub)
                 status = status + 1
+
             else:
-                if key == '\x03':
+                if (key == '\x03'):
                     break
 
             if status == 20:
-                print(msg)
+                print
+                msg
                 status = 0
 
             twist = Twist()
 
             control_linear_vel = makeSimpleProfile(control_linear_vel, target_linear_vel, (LIN_VEL_STEP_SIZE / 2.0))
-            twist.linear.x = control_linear_vel
-            twist.linear.y = 0.0
+            twist.linear.x = control_linear_vel;
+            twist.linear.y = 0.0;
             twist.linear.z = 0.0
 
             control_angular_vel = makeSimpleProfile(control_angular_vel, target_angular_vel, (ANG_VEL_STEP_SIZE / 2.0))
-            twist.angular.x = 0.0
-            twist.angular.y = 0.0
+            twist.angular.x = 0.0;
+            twist.angular.y = 0.0;
             twist.angular.z = control_angular_vel
 
             pub.publish(twist)
 
     except:
-        print(e)
+        print
+        e
 
     finally:
         twist = Twist()
-        twist.linear.x = 0.0
-        twist.linear.y = 0.0
+        twist.linear.x = 0.0;
+        twist.linear.y = 0.0;
         twist.linear.z = 0.0
-        twist.angular.x = 0.0
-        twist.angular.y = 0.0
+        twist.angular.x = 0.0;
+        twist.angular.y = 0.0;
         twist.angular.z = 0.0
         pub.publish(twist)
 
     if os.name != 'nt':
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
 
+start_position = None
+current_position = None
+arret = None
+
+
+def distance(pos1, pos2):
+    if pos1 is None or pos2 is None:
+        return 0
+    return math.sqrt((pos1.x - pos2.x) ** 2 + (pos1.y - pos2.y) ** 2)
+
+
+def maj_distance(msg):
+    global start_position, current_position
+    current_position = msg.pose.pose.position
+
+    if start_position is None:
+        start_position = current_position
+
+
+def callback(msg):
+    global arret
+    arret = msg.ranges[0]
+
+
+def laser(dist):
+    if dist is None:
+        return 0
+    else:
+        return dist
+
+
+def etalonnage(velocity_publisher):
+    global start_position, current_position, arret
+    rospy.Subscriber('odom', Odometry, maj_distance)
+    sub = rospy.Subscriber('scan', LaserScan, callback)
+
+    vel_msg = Twist()
+    vel_msg.linear.x = 1
+    vel_msg.linear.y = 0
+    vel_msg.linear.z = 0
+    vel_msg.angular.x = 0
+    vel_msg.angular.y = 0
+    vel_msg.angular.z = 0
+
+    operations_par_seconde = 50.
+    rate = rospy.Rate(operations_par_seconde)
+
+    t = 0
+    while not rospy.is_shutdown() and distance(start_position, current_position) < 0.5 and t == 0:
+
+        test = laser(arret)
+        if test > 0.5:
+            vel_msg.linear.x = 1
+            print("0")
+        if test < 0.5:
+            vel_msg.linear.x = 0
+            print("1")
+            t = t + 1
+        velocity_publisher.publish(vel_msg)
+        rate.sleep()
+
+    vel_msg.angular.z = 0
+    velocity_publisher.publish(vel_msg)
+
+
 if __name__ == "__main__":
-    # call function etalonnage
     etalonnage()

@@ -1,17 +1,42 @@
-import sys, select, os
-import time
+#!/usr/bin/env python
+
+# Copyright (c) 2011, Willow Garage, Inc.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#    * Redistributions of source code must retain the above copyright
+#      notice, this list of conditions and the following disclaimer.
+#    * Redistributions in binary form must reproduce the above copyright
+#      notice, this list of conditions and the following disclaimer in the
+#      documentation and/or other materials provided with the distribution.
+#    * Neither the name of the Willow Garage, Inc. nor the names of its
+#      contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
 import rospy
-import math
 from geometry_msgs.msg import Twist
-from nav_msgs.msg import Odometry
-from sensor_msgs.msg import LaserScan
+import sys, select, os
+
+# permet à l'utilisateur de contrôler manuellement le turtlebot avec des inputs.
 
 if os.name == 'nt':
     import msvcrt
 else:
     import tty, termios
-
-from avanceObstacle import etalonnage
 
 BURGER_MAX_LIN_VEL = 0.22
 BURGER_MAX_ANG_VEL = 2.84
@@ -29,13 +54,12 @@ Control Your TurtleBot3!
 Moving around:
         z
    q    s    d
-        x    o	
+        x
 
 w/x : increase/decrease linear velocity (Burger : ~ 0.22, Waffle and Waffle Pi : ~ 0.26)
 a/d : increase/decrease angular velocity (Burger : ~ 2.84, Waffle and Waffle Pi : ~ 1.82)
 
 space key, s : force stop
-o : Noeud avanceObstacle
 
 CTRL-C to quit
 """
@@ -128,7 +152,6 @@ if __name__ == "__main__":
         msg
         while (1):
             key = getKey()
-
             if key == 'z':
                 target_linear_vel = checkLinearLimitVelocity(target_linear_vel + LIN_VEL_STEP_SIZE)
                 status = status + 1
@@ -156,11 +179,6 @@ if __name__ == "__main__":
                 control_angular_vel = 0.0
                 print
                 vels(target_linear_vel, target_angular_vel)
-
-            elif key == 'o':
-                etalonnage(pub)
-                status = status + 1
-
             else:
                 if (key == '\x03'):
                     break
@@ -200,71 +218,3 @@ if __name__ == "__main__":
 
     if os.name != 'nt':
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
-
-start_position = None
-current_position = None
-arret = None
-
-
-def distance(pos1, pos2):
-    if pos1 is None or pos2 is None:
-        return 0
-    return math.sqrt((pos1.x - pos2.x) ** 2 + (pos1.y - pos2.y) ** 2)
-
-
-def maj_distance(msg):
-    global start_position, current_position
-    current_position = msg.pose.pose.position
-
-    if start_position is None:
-        start_position = current_position
-
-
-def callback(msg):
-    global arret
-    arret = msg.ranges[0]
-
-
-def laser(dist):
-    if dist is None:
-        return 0
-    else:
-        return dist
-
-
-def etalonnage(velocity_publisher):
-    global start_position, current_position, arret
-    rospy.Subscriber('odom', Odometry, maj_distance)
-    sub = rospy.Subscriber('scan', LaserScan, callback)
-
-    vel_msg = Twist()
-    vel_msg.linear.x = 1
-    vel_msg.linear.y = 0
-    vel_msg.linear.z = 0
-    vel_msg.angular.x = 0
-    vel_msg.angular.y = 0
-    vel_msg.angular.z = 0
-
-    operations_par_seconde = 50.
-    rate = rospy.Rate(operations_par_seconde)
-
-    t = 0
-    while not rospy.is_shutdown() and distance(start_position, current_position) < 0.5 and t == 0:
-
-        test = laser(arret)
-        if test > 0.5:
-            vel_msg.linear.x = 1
-            print("0")
-        if test < 0.5:
-            vel_msg.linear.x = 0
-            print("1")
-            t = t + 1
-        velocity_publisher.publish(vel_msg)
-        rate.sleep()
-
-    vel_msg.angular.z = 0
-    velocity_publisher.publish(vel_msg)
-
-
-if __name__ == "__main__":
-    etalonnage()

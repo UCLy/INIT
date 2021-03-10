@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from gazeboEnacter import GazeboEnacter
+import random
 
 
 class Agent:
@@ -11,9 +12,11 @@ class Agent:
         self.anticipated_outcome = 0
         self.anticipation_0 = 0
         self.anticipation_1 = 0
+        self.anticipation_2 = 0
         self.ennui = 0
         self.valeur_hedoniste_anticipee_pour_action_0 = 0
         self.valeur_hedoniste_anticipee_pour_action_1 = 0
+        self.valeur_hedoniste_anticipee_pour_action_2 = 0
 
     def action(self, outcome):
         """ Computing the next action to enact """
@@ -24,19 +27,30 @@ class Agent:
                 self.new_action = self._action
             if self.ennui >= 3 or self.valeur_hedoniste_anticipee_pour_action_0 <= self.valeur_hedoniste_anticipee_pour_action_1:
                 if self._action == 0:
-                    self.new_action = 1
-                else:
+                    self.new_action = random.randint(1, 2)
+                if self._action == 1 or self._action == 2:
                     self.new_action = 0
 
-        else:
+        elif self._action == 1:
             self.anticipation_1 = outcome
             self.valeur_hedoniste_anticipee_pour_action_1 = self.hedonist_table[1][self.anticipation_1]
             if outcome == self.anticipated_outcome and self.valeur_hedoniste_anticipee_pour_action_1 >= self.valeur_hedoniste_anticipee_pour_action_0:
                 self.new_action = self._action
             if self.ennui >= 3 or self.valeur_hedoniste_anticipee_pour_action_1 <= self.valeur_hedoniste_anticipee_pour_action_0:
                 if self._action == 0:
-                    self.new_action = 1
-                else:
+                    self.new_action = random.randint(1, 2)
+                if self._action == 1 or self._action == 2:
+                    self.new_action = 0
+
+        elif self._action == 2:
+            self.anticipation_2 = outcome
+            self.valeur_hedoniste_anticipee_pour_action_2 = self.hedonist_table[2][self.anticipation_2]
+            if outcome == self.anticipated_outcome and self.valeur_hedoniste_anticipee_pour_action_2 >= self.valeur_hedoniste_anticipee_pour_action_0:
+                self.new_action = self._action
+            if self.ennui >= 3 or self.valeur_hedoniste_anticipee_pour_action_2 <= self.valeur_hedoniste_anticipee_pour_action_0:
+                if self._action == 0:
+                    self.new_action = random.randint(1, 2)
+                if self._action == 1 or self._action == 2:
                     self.new_action = 0
 
         if self._action == self.new_action:
@@ -75,11 +89,13 @@ class Agent:
 def world(agent, environment):
     """ The main loop controlling the interaction of the agent with the environment """
     outcome = 0
-    for i in range(10):
+    for i in range(20):
         action = agent.action(outcome)
         outcome = environment.outcome(action)
-        if action == 1 or action == 2:
-            nom_action = "turn"
+        if action == 1:
+            nom_action = "turn left"
+        elif action == 2:
+            nom_action = "turn right"
         else:
             nom_action = "forward"
 
@@ -97,7 +113,7 @@ def world(agent, environment):
               + ", Satisfaction: " + str(agent.satisfaction(outcome)))
 
 
-hedonist_table = [[-1, 1], [-1, 1]]
+hedonist_table = [[-1, 1], [-1, 1], [-1, 1]]
 a = Agent(hedonist_table)
 # e = Environment1()
 # e = Environment2()

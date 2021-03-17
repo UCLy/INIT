@@ -9,46 +9,49 @@ from sensor_msgs.msg import LaserScan
 class GazeboEnacter:
 
     def __init__(self):
-        """ Creation of the GazeboEnacter object """
+        """ Creation of the GazeboEnacter object. """
 
-        # Message to inform user
-        rospy.loginfo("Press CTRL+c to stop TurtleBot")
+        # Message to inform user.
+        rospy.loginfo("Press CTRL + C to stop TurtleBot")
 
-        # Keys CNTL + c will stop script
+        # Keys CTRL + C will stop script.
         rospy.on_shutdown(self.shutdown)
 
-        """ Creating our node, publisher and subscriber """
+        # Creating our node, publisher and subscriber.
         rospy.init_node('gazebo_enacter', anonymous=True)
         self.velocity_publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
-        self.odom_subscriber = rospy.Subscriber('/turtle1/pose', Odometry, self.callback)
-
-        self.odom = Odometry()
         self.rate = rospy.Rate(10)
-        self.numpyArray = numpy.full(360, numpy.inf)
-
-    def callback(self, data):
-        """ Callback function implementing the pose value received """
-        print(data)
-        self.odom = data
-        self.odom.x = round(self.odom.x, 4)
-        self.odom.y = round(self.odom.y, 4)
+        self.data_ranges = numpy.full(360, numpy.inf)
 
     def getTurtleBotPos(self, data):
-        """ Callback function that collects information from LaserScan
+        """ Callback function that collects information from LaserScan.
 
             These informations are stored in the variable data and we take
             the ranges array where are stored all the distances between the
-            robot and the obstacle at 360° and at a maximum distance of 3.5 metres.
+            robot and the obstacle at 360° and at a maximum distance of 3.5 meters.
         """
-        self.numpyArray = numpy.array(data.ranges)
+        self.data_ranges = numpy.array(data.ranges)
         # print("Valeurs brut : " + str(data.ranges[0]))
         # print("Original type: " + str(type(data.ranges[0])))
-        # print("Tableau numpy : " + str(numpyArray[0]))
-        # print("Numpy type: " + str(type(numpyArray)))
+        # print("Tableau numpy : " + str(data_ranges[0]))
+        # print("Numpy type: " + str(type(data_ranges)))
         # print("distObstacleDevant : " + str(data.ranges[180]))
 
     def move(self, safe_dist=0.4, linear_speed=0.0, angular_speed=0.0, duration=5.0):
-        """ Enacting a movement and returning the outcome """
+        """ Enacting a movement and returning the outcome.
+
+        :param safe_dist: the minimum distance between an obstacle and the robot
+        :type safe_dist: float
+        :param linear_speed: the robot's speed in a straight line
+        :type linear_speed: float
+        :param angular_speed: the robot's speed during its rotation
+        :type angular_speed: float
+        :param duration: the time during which the robot moves
+        :type duration: float
+        :return: return an outcome which will be used to choose the future action of the robot
+        :rtype: int
+        """
+
         self.laser_subscriber = rospy.Subscriber('scan', LaserScan, self.getTurtleBotPos)
         self.current_position = rospy.Subscriber('odom', Odometry, None)
         vel_msg = Twist()
@@ -61,47 +64,39 @@ class GazeboEnacter:
         vel_msg.angular.y = 0
         vel_msg.angular.z = angular_speed
 
-        # Setting the current time for duration calculus
+        # Setting the current time for duration calculus.
         t0 = float(rospy.Time.now().to_sec())
 
-        # Loop to move the turtle during a specific duration
-
-        # while float(rospy.Time.now().to_sec()) - t0 < duration:
-        #     # Publish the velocity
-        #     self.velocity_publisher.publish(vel_msg)
-        #     self.rate.sleep()
-
+        # Loop to move the turtle during a specific duration.
         while float(rospy.Time.now().to_sec()) - t0 < duration:
-            # print(str(self.numpyArray[0]))
-            if self.numpyArray[
-                0] < safe_dist:  # or self.numpyArray[90] < safe_dist or self.numpyArray[270] < safe_dist:
-                # print("diego")
+            if self.data_ranges[0] < safe_dist:  # or self.data_ranges[90] < safe_dist or self.data_ranges[270] <
+                # safe_dist:
+
+                # There is an obstacle too close to the robot.
                 warning = True
+
+                # Publish a null velocity in order to stop the robot.
                 self.velocity_publisher.publish(Twist())
-                # break
             else:
-                # print("dora")
+                # Publish the velocity.
                 self.velocity_publisher.publish(vel_msg)
                 self.rate.sleep()
-        # print("c fini")
 
-        # After the loop, stops the robot
+        # After the loop, stops the robot.
         vel_msg.linear.x = 0
         vel_msg.angular.z = 0
 
-        # Publish the null velocity to force the robot to stop
+        # Publish the null velocity to force the robot to stop.
         self.velocity_publisher.publish(vel_msg)
 
-        # return outcome 1 if the robot is close to a wall
+        # Return outcome 1 if the robot is close to a wall.
         if warning:
             return 1
         else:
             return 0
 
-    # def updatePosition(self, data):
-
     def outcome(self, action):
-        """ Enacting an action and returning the outcome """
+        """ Enacting an action and returning the outcome. """
         if action == 0:
             # move forward
             return self.move(linear_speed=0.2)
@@ -115,11 +110,14 @@ class GazeboEnacter:
             return 0
 
     def shutdown(self):
-        # You can stop turtlebot by publishing an empty Twist message
+        """ Stop the robot. """
+
+        # Sending a message to the user.
         rospy.loginfo("Stopping TurtleBot")
 
         self.velocity_publisher.publish(Twist())
-        # Give TurtleBot time to stop
+        
+        # Give TurtleBot time to stop.
         rospy.sleep(1)
         return 0
 

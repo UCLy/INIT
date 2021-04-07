@@ -23,9 +23,6 @@ class Agent:
         self.valeur_hedoniste_anticipee_pour_action_0 = 0
         self.valeur_hedoniste_anticipee_pour_action_1 = 0
         self.valeur_hedoniste_anticipee_pour_action_2 = 0
-        self.valeur_hedoniste_anticipee = [self.valeur_hedoniste_anticipee_pour_action_0,
-                                           self.valeur_hedoniste_anticipee_pour_action_1,
-                                           self.valeur_hedoniste_anticipee_pour_action_2]
         self.previous_turn = 0
 
     def action(self, outcome):
@@ -35,32 +32,27 @@ class Agent:
         :return: the value of the action.
         """
 
-        action = 0
+        # action forward
         if self._action == 0:
-            action = 0
             self.anticipation_0 = outcome
             self.valeur_hedoniste_anticipee_pour_action_0 = self.hedonist_table[0][self.anticipation_0]
-
-            if outcome == self.anticipated_outcome and self.valeur_hedoniste_anticipee[action] >= self.valeur_hedoniste_anticipee_pour_action_1:
+            if outcome == self.anticipated_outcome and self.valeur_hedoniste_anticipee_pour_action_0 >= self.valeur_hedoniste_anticipee_pour_action_1:
                 self.new_action = self._action
             if self.ennui >= 3 or self.valeur_hedoniste_anticipee_pour_action_0 <= self.valeur_hedoniste_anticipee_pour_action_1:
                 # compare with previous turn
-            if self.ennui >= 3 or self.valeur_hedoniste_anticipee[action] <= self.valeur_hedoniste_anticipee_pour_action_1:
                 if self._action == 0:
                     self.new_action = random.randint(1, 2)
                 if self._action == 1 or self._action == 2:
                     self.new_action = 0
 
+        # action turn left
         elif self._action == 1:
-            action = 1
             self.anticipation_1 = outcome
             self.valeur_hedoniste_anticipee_pour_action_1 = self.hedonist_table[1][self.anticipation_1]
-
-            if outcome == self.anticipated_outcome and self.valeur_hedoniste_anticipee[action] >= self.valeur_hedoniste_anticipee_pour_action_0:
+            if outcome == self.anticipated_outcome and self.valeur_hedoniste_anticipee_pour_action_1 >= self.valeur_hedoniste_anticipee_pour_action_0:
                 self.new_action = self._action
             if self.ennui >= 3 or self.valeur_hedoniste_anticipee_pour_action_1 <= self.valeur_hedoniste_anticipee_pour_action_0:
                 # compare with previous turn
-            if self.ennui >= 3 or self.valeur_hedoniste_anticipee[action] <= self.valeur_hedoniste_anticipee_pour_action_0:
                 if self._action == 0:
                     self.new_action = random.randint(1, 2)
                 if self._action == 1 or self._action == 2:
@@ -68,13 +60,10 @@ class Agent:
 
         # action turn right
         elif self._action == 2:
-            action = 2
             self.anticipation_2 = outcome
             self.valeur_hedoniste_anticipee_pour_action_2 = self.hedonist_table[2][self.anticipation_2]
-
-            if outcome == self.anticipated_outcome and self.valeur_hedoniste_anticipee[action] >= self.valeur_hedoniste_anticipee_pour_action_0:
+            if outcome == self.anticipated_outcome and self.valeur_hedoniste_anticipee_pour_action_2 >= self.valeur_hedoniste_anticipee_pour_action_0:
                 self.new_action = self._action
-            if self.ennui >= 3 or self.valeur_hedoniste_anticipee[action] <= self.valeur_hedoniste_anticipee_pour_action_0:
             if self.ennui >= 3 or self.valeur_hedoniste_anticipee_pour_action_2 <= self.valeur_hedoniste_anticipee_pour_action_0:
                 # compare with previous turn
                 if self._action == 0:

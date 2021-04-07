@@ -71,7 +71,7 @@ class GazeboEnacter:
 
         # Loop to move the turtle during a specific duration.
         while float(rospy.Time.now().to_sec()) - t0 < duration:
-            if self.data_ranges[0] < safe_dist:
+            if self.data_ranges[0] < safe_dist or self.data_ranges[20] < safe_dist or self.data_ranges[340] < safe_dist:
 
                 # There is an obstacle too close to the robot.
                 warning = True
@@ -139,6 +139,6 @@ if __name__ == '__main__':
         lx_speed = float(input("Input the linear speed (cell /sec): "))
         az_speed = float(input("Input the angular speed (rad /sec): "))
         d = float(input("Input the duration (sec): "))
-        x.move(lx_speed, az_speed, d)
+        x.move(0.4, lx_speed, az_speed, d)
     except rospy.ROSInterruptException:
         pass

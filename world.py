@@ -46,14 +46,16 @@ class Agent:
         self.valeur_hedoniste_anticipee[self._action][outcome] = self.hedonist_table[self._action][outcome]
         if self._action == 0:
             self.anticipation_0 = outcome
-            if self.valeur_hedoniste_anticipee[self._action][outcome] > max(self.valeur_hedoniste_anticipee[1][0], self.valeur_hedoniste_anticipee[1][1]):
+            if self.valeur_hedoniste_anticipee[self._action][outcome] > max(self.valeur_hedoniste_anticipee[1][0],
+                                                                            self.valeur_hedoniste_anticipee[1][1]):
                 self._action = self.increment_ennui(self._action)
             else:
                 self._action = change_action(self._action)
                 self.ennui = 0
         else:
             self.anticipation_1 = outcome
-            if self.valeur_hedoniste_anticipee[self._action][outcome] > max(self.valeur_hedoniste_anticipee[0][0], self.valeur_hedoniste_anticipee[0][1]):
+            if self.valeur_hedoniste_anticipee[self._action][outcome] > max(self.valeur_hedoniste_anticipee[0][0],
+                                                                            self.valeur_hedoniste_anticipee[0][1]):
                 self._action = self.increment_ennui(self._action)
             else:
                 self._action = change_action(self._action)
@@ -143,7 +145,7 @@ class Agent:
         # The value of the enacted interaction
         hedonist_satisfaction = self.hedonist_table[self._action][new_outcome]
         ennui = False
-        if self.ennui == 3:
+        if self.ennui == 2:
             ennui = True
         else:
             ennui = False
@@ -181,7 +183,7 @@ def world(agent, environment):
             nom_anticipation = "no obstacle"
 
         print(" Action: " + nom_action + ", Anticipation: " + nom_anticipation + ", Outcome: " + nom_outcome
-              + ", Satisfaction: " + str(agent.satisfaction(outcome)))
+              + ", Satisfaction: " + str(agent.satisfaction(outcome)) + "\n")
 
 
 hedonist_table = [[1, -3], [-2, -2], [-2, -2]]

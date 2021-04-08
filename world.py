@@ -3,6 +3,14 @@ from gazeboEnacter import GazeboEnacter
 import random
 
 
+def change_action(action):
+    if action == 0:
+        new_action = random.randint(1, 2)
+    else:
+        new_action = 0
+    return new_action
+
+
 class Agent:
     def __init__(self, _hedonist_table):
         """ Creating our agent
@@ -20,10 +28,37 @@ class Agent:
         self.anticipation_1 = 0
         self.anticipation_2 = 0
         self.ennui = 0
+        self.valeur_hedoniste_anticipee = [[0, 0], [0, 0], [0, 0]]
         self.valeur_hedoniste_anticipee_pour_action_0 = 0
         self.valeur_hedoniste_anticipee_pour_action_1 = 0
         self.valeur_hedoniste_anticipee_pour_action_2 = 0
-        self.previous_turn = 0
+
+    def increment_ennui(self, action):
+        if self.ennui >= 2:
+            new_action = change_action(action)
+            self.ennui = 0
+        else:
+            self.ennui += 1
+            new_action = action
+        return new_action
+
+    def upgraded_action(self, outcome):
+        self.valeur_hedoniste_anticipee[self._action][outcome] = self.hedonist_table[self._action][outcome]
+        if self._action == 0:
+            self.anticipation_0 = outcome
+            if self.valeur_hedoniste_anticipee[self._action][outcome] > max(self.valeur_hedoniste_anticipee[1][0], self.valeur_hedoniste_anticipee[1][1]):
+                self._action = self.increment_ennui(self._action)
+            else:
+                self._action = change_action(self._action)
+                self.ennui = 0
+        else:
+            self.anticipation_1 = outcome
+            if self.valeur_hedoniste_anticipee[self._action][outcome] > max(self.valeur_hedoniste_anticipee[0][0], self.valeur_hedoniste_anticipee[0][1]):
+                self._action = self.increment_ennui(self._action)
+            else:
+                self._action = change_action(self._action)
+                self.ennui = 0
+        return self._action
 
     def action(self, outcome):
         """ Computing the next action to enact
@@ -47,6 +82,7 @@ class Agent:
 
         # action turn left
         elif self._action == 1:
+            action = 1
             self.anticipation_1 = outcome
             self.valeur_hedoniste_anticipee_pour_action_1 = self.hedonist_table[1][self.anticipation_1]
             if outcome == self.anticipated_outcome and self.valeur_hedoniste_anticipee_pour_action_1 >= self.valeur_hedoniste_anticipee_pour_action_0:
@@ -125,7 +161,7 @@ def world(agent, environment):
 
     outcome = 0
     for i in range(20):
-        action = agent.action(outcome)
+        action = agent.upgraded_action(outcome)
         outcome = environment.outcome(action)
         if action == 1:
             nom_action = "turn left"
@@ -148,7 +184,7 @@ def world(agent, environment):
               + ", Satisfaction: " + str(agent.satisfaction(outcome)))
 
 
-hedonist_table = [[1, -1], [-2, -2], [-2, -2]]
+hedonist_table = [[1, -3], [-2, -2], [-2, -2]]
 a = Agent(hedonist_table)
 # e = Environment1()
 # e = Environment2()

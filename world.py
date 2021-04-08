@@ -121,7 +121,6 @@ def world(agent, environment):
     :type agent:
     :param environment:
     :type environment:
-
     """
 
     outcome = 0

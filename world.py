@@ -3,13 +3,6 @@ from gazeboEnacter import GazeboEnacter
 import random
 
 
-def change_action(action):
-    if action == 0:
-        new_action = random.randint(1, 2)
-    else:
-        new_action = 0
-    return new_action
-
 
 class Agent:
     def __init__(self, _hedonist_table):
@@ -33,13 +26,29 @@ class Agent:
         self.valeur_hedoniste_anticipee_pour_action_1 = 0
         self.valeur_hedoniste_anticipee_pour_action_2 = 0
 
+    def change_action(self, action):
+        if action == 0:
+            new_action = self.turn_choice()
+        else:
+            new_action = 0
+        return new_action
+
     def increment_ennui(self, action):
         if self.ennui >= 2:
-            new_action = change_action(action)
+            new_action = self.change_action(action)
             self.ennui = 0
         else:
             self.ennui += 1
             new_action = action
+        return new_action
+
+    def turn_choice(self):
+        if self.valeur_hedoniste_anticipee[1][0] > self.valeur_hedoniste_anticipee[2][0]:
+            new_action = 1
+        elif self.valeur_hedoniste_anticipee[1][0] < self.valeur_hedoniste_anticipee[2][0]:
+            new_action = 2
+        else:
+            new_action = random.randint(1, 2)
         return new_action
 
     def upgraded_action(self, outcome):
@@ -50,7 +59,7 @@ class Agent:
                                                                             self.valeur_hedoniste_anticipee[1][1]):
                 self._action = self.increment_ennui(self._action)
             else:
-                self._action = change_action(self._action)
+                self._action = self.change_action(self._action)
                 self.ennui = 0
         else:
             self.anticipation_1 = outcome
@@ -58,7 +67,7 @@ class Agent:
                                                                             self.valeur_hedoniste_anticipee[0][1]):
                 self._action = self.increment_ennui(self._action)
             else:
-                self._action = change_action(self._action)
+                self._action = self.change_action(self._action)
                 self.ennui = 0
         return self._action
 

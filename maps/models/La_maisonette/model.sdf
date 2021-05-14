@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <sdf version='1.6'>
-  <model name='La_maisonette'>
+  <model name='la_maisonette'>
     <pose frame=''>-0.705 -1.99 0 0 -0 0</pose>
     <link name='Wall_11'>
       <collision name='Wall_11_Collision'>

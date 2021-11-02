@@ -1,26 +1,12 @@
 # README of the Incremental Natural Interactions on Turtlebot (INIT) project #
 
-This project is centered around the creation and research of incremental natural interactions on a Turtlebot3 Burger robot
+The INIT project aims at demonstrating constructivist learning with a Turtlebot robot. 
 
 ## Dependencies
 
-This project needs `ROSCORE` to function properly.
-
-A `ROSCORE` compatible Linux environment is strongly recommended
-
-In case you do not have access to a Turtlebot3 Burger robot, a `ROSCORE` compatible simulator with a working Turtlebot model will also be needed
-(for example `Gazebo`)
+The project uses `ROS` (http://wiki.ros.org/) on `Ubuntu`.
+The demos are made in the simulated environment `Gazebo` but are designed to work with a real `Turtlebot` (https://www.turtlebot.com/). 
 
 ## Starting the project
 
-Make sure to have installed `ROSCORE` and except if you have a working Turtlebot3, a ROS compatible simulator with an imported Turtlebot3 3d model
-
-You can find instructions to install `ROSCORE` here: http://wiki.ros.org/
-
-The `Gazebo` simulator should be included in the basic ROS package, you can use the "gazebo" command to check if it is the case
-
-You can find instructions to import a Turtlebot3 model here: http://emanual.robotis.com/docs/en/platform/turtlebot3/simulation/
-
-Refer to the wiki for various pointers on how to get started with the interactions of this project and some technical support
-
-A step by step documentation to install the working environment is available here https://github.com/UCLy/INIT/wiki/Configuration-de-l'environnement-de-travail (in French).
+Follow the instructions in the wiki:  https://github.com/UCLy/INIT/wiki.
